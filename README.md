@@ -60,8 +60,6 @@ If you have "my_message" in your lang file, put {my_message} in the config.
   
 	{DATE} 	- current date
   
-	{SERVERNAME} - server name
-  
 	{IP} - server ip
   
 	{PORT} - server port
@@ -70,4 +68,4 @@ If you have "my_message" in your lang file, put {my_message} in the config.
   
 	{MAXPLAYERS} - how many slots are available on the server
   
-	\n		- new line
+	\n OR {N}		- new line
