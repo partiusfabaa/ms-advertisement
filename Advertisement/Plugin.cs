@@ -32,7 +32,7 @@ public class Plugin : IModSharpModule
     private readonly ILogger _logger;
     private readonly List<Guid> _timers = [];
     private readonly Dictionary<string, string> _colorCache = [];
-    private string? _ip;
+    private string _ip = "0.0.0.0";
 
     public Plugin(ISharedSystem sharedSystem,
         string dllPath,
@@ -66,7 +66,7 @@ public class Plugin : IModSharpModule
             }
         }
 
-        _conVarManager.CreateConsoleCommand("ms_ads_reload", (player, info) =>
+        _conVarManager.CreateServerCommand("ms_ads_reload", info =>
         {
             StopTimers();
             _config = LoadConfig();
@@ -74,14 +74,13 @@ public class Plugin : IModSharpModule
 
             _logger.LogInformation("Config successfully reloaded");
             return ECommandAction.Stopped;
-        }, "Reload advertisements");
+        }, "Reload advertisements", ConVarFlags.Release);
         return true;
     }
 
-
     private string GetPublicIP()
     {
-        if (!string.IsNullOrEmpty(_ip) && _ip != "0.0.0.0")
+        if (_ip != "0.0.0.0")
             return _ip;
 
         var ip = _steamGameServer.GetPublicIP();
@@ -126,8 +125,6 @@ public class Plugin : IModSharpModule
     private TimerAction ShowAd(Advertisement ads)
     {
         var messages = ads.NextMessages;
-        if (messages.Count == 0) return TimerAction.Continue;
-
         foreach (var (type, message) in messages)
         {
             PrintWrappedLine(type, message);
@@ -216,6 +213,7 @@ public class Plugin : IModSharpModule
     public void Shutdown()
     {
         StopTimers();
+        _conVarManager.ReleaseCommand("ms_ads_reload");
     }
 
     private Config LoadConfig()

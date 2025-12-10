@@ -16,7 +16,6 @@ LRMini/.idea
 *.cache
 *.editorconfig
 *.dll
-*.json
 *.pdb
 *.CopyComplete
 *.txt

@@ -1,0 +1,18 @@
+{
+  "info_status": {
+    "en-us": "{Green}Map: {Lime}{MAP} {Grey}| {Green}Players: {Lime}{PLAYERS}/{MAXPLAYERS}",
+    "ru-ru": "{Green}Карта: {Lime}{MAP} {Grey}| {Green}Игроки: {Lime}{PLAYERS}/{MAXPLAYERS}"
+  },
+  "center_date": {
+    "en-us": "Date: {DATE}",
+    "ru-ru": "Дата: {DATE}"
+  },
+  "info_server": {
+    "en-us": "IP: {IP}:{PORT}\nTime: {TIME}",
+    "ru-ru": "IP: {IP}:{PORT}\nВремя: {TIME}"
+  },
+  "chat_social": {
+    "en-us": "{Blue}► Join our Discord server!{N}{White}Link: {Green}discord.com",
+    "ru-ru": "{Blue}► Залетайте в наш Дискорд!{N}{White}Ссылка: {Green}discord.com"
+  }
+}
