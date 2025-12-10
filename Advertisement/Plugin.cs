@@ -15,13 +15,6 @@ using Sharp.Shared.Units;
 
 namespace Advertisement;
 
-public enum Destination : byte
-{
-    Chat = 0,
-    Center = 1,
-    Panel = 2
-}
-
 public class Plugin : IModSharpModule
 {
     public string DisplayName => "Advertisement";
@@ -31,7 +24,6 @@ public class Plugin : IModSharpModule
     private readonly IModSharp _modSharp;
     private readonly IConVarManager _conVarManager;
     private readonly ISharpModuleManager _modules;
-    private readonly IEventManager _eventManager;
     private readonly string _configPath;
 
     private Config _config;
@@ -53,7 +45,6 @@ public class Plugin : IModSharpModule
         _modSharp = sharedSystem.GetModSharp();
         _modules = sharedSystem.GetSharpModuleManager();
         _conVarManager = sharedSystem.GetConVarManager();
-        _eventManager = sharedSystem.GetEventManager();
 
         _configPath = Path.Combine(sharpPath, "configs", "Advertisement", "Advertisement.json");
         _logger = sharedSystem.GetLoggerFactory().CreateLogger(DisplayName);
@@ -186,17 +177,13 @@ public class Plugin : IModSharpModule
                     foreach (var part in parts)
                     {
                         var finalPart = (part.StartsWith(" ") || part.Length == 0) ? part : $" {part}";
-                        controller.Print(HudPrintChannel.Chat, finalPart);
+                        controller.Print(HudPrintChannel.Chat, $" {finalPart}");
                     }
 
                     break;
 
                 case Destination.Center:
                     controller.Print(HudPrintChannel.Center, message);
-                    break;
-
-                case Destination.Panel:
-                    ShowWinPanelHtml(controller, message);
                     break;
             }
         }
@@ -255,31 +242,21 @@ public class Plugin : IModSharpModule
         {
             new Advertisement
             {
-                Interval = 300,
+                Interval = 5,
                 Messages =
                 [
                     new Dictionary<Destination, string>
                     {
-                        [Destination.Chat] = "{test}",
-                        [Destination.Center] = "Test Center 1",
-                        [Destination.Panel] = "Test Panel <font color='red'>1</font>"
+                        [Destination.Chat] = "{info_status}",
+                        [Destination.Center] = "{center_date}"
                     },
                     new Dictionary<Destination, string>
                     {
-                        [Destination.Chat] = "{test_currentmap}"
+                        [Destination.Center] = "{info_server}"
                     },
                     new Dictionary<Destination, string>
                     {
-                        [Destination.Chat] = "{test_ip} test_ip"
-                    },
-                    new Dictionary<Destination, string>
-                    {
-                        [Destination.Chat] = "{test_players}",
-                        [Destination.Panel] = "<font color='#ff0ff0'>{test_players}</font>"
-                    },
-                    new Dictionary<Destination, string>
-                    {
-                        [Destination.Center] = "Test Center 2"
+                        [Destination.Chat] = "{chat_social}"
                     }
                 ]
             }
@@ -306,25 +283,5 @@ public class Plugin : IModSharpModule
                 yield return controller;
             }
         }
-    }
-
-    private void ShowWinPanelHtml(IPlayerController controller, string html)
-    {
-        var client = controller.GetGameClient();
-        if (client is not { IsValid: true, IsFakeClient: false })
-            return;
-
-        var gameEvent = _eventManager.CreateEvent("cs_win_panel_round", true);
-        if (gameEvent == null)
-            return;
-
-        gameEvent.SetBool("show_timer_defend", false);
-        gameEvent.SetBool("show_timer_attack", false);
-        gameEvent.SetInt("timer_time", 1);
-        gameEvent.SetInt("final_event", -1);
-        gameEvent.SetPlayer("funfact_player", controller);
-        gameEvent.SetString("funfact_token", html);
-        gameEvent.FireToClient(client);
-        gameEvent.Dispose();
     }
 }

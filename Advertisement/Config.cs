@@ -11,5 +11,12 @@ public class Advertisement
 
     private int _currentMessageIndex;
 
-    [JsonIgnore] public Dictionary<Destination, string> NextMessages => Messages[_currentMessageIndex++ % Messages.Count];
+    [JsonIgnore]
+    public Dictionary<Destination, string> NextMessages => Messages[_currentMessageIndex++ % Messages.Count];
+}
+
+public enum Destination : byte
+{
+    Chat = 0,
+    Center = 1
 }
