@@ -50,7 +50,7 @@ Use the key format {KEY_NAME} in your Advertisement.json.
 If you have "my_message" in your lang file, put {my_message} in the config.
 
 # CHAT COLORS: 
-{DEFAULT}, {RED}, {LIGHTPURPLE}, {GREEN}, {LIME}, {LIGHTGREEN}, {LIGHTRED}, {GRAY}, {LIGHTOLIVE}, {OLIVE}, {LIGHTBLUE}, {BLUE}, {PURPLE}, {GRAYBLUE}
+{White}, {DarkRed}, {Pink}, {Green}, {LightGreen}, {Lime}, {Red}, {Grey}, {Yellow}, {Gold}, {Silver}, {Blue}, {DarkBlue}, {Purple}, {LightRed}, {Muted}, {Head}
 
 # TAGS:
 
