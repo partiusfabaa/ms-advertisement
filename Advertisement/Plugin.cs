@@ -34,6 +34,8 @@ public class Plugin : IModSharpModule
     private readonly Dictionary<string, string> _colorCache = [];
     private string _ip = "0.0.0.0";
 
+    private readonly Regex _tagRegex = new(@"\{([\w\d_:-]+)\}", RegexOptions.Compiled);
+
     public Plugin(ISharedSystem sharedSystem,
         string dllPath,
         string sharpPath,
@@ -156,25 +158,51 @@ public class Plugin : IModSharpModule
             if (gameClient == null) continue;
 
             var message = messageKey;
-            if (_localizer != null)
-            {
-                var loc = _localizer.GetLocalizer(gameClient);
+            var loc = _localizer?.GetLocalizer(gameClient);
 
-                message = Regex.Replace(message, @"\{([\w\d_]+)\}",
-                    match => loc.TryGet(match.Groups[1].Value) ?? match.Value);
+            if (loc != null)
+            {
+                var mainTrans = loc.TryGet(message);
+                if (!string.IsNullOrEmpty(mainTrans)) message = mainTrans;
             }
 
-            message = ReplaceTags(message, globalReplacements);
+            message = _tagRegex.Replace(message, match =>
+            {
+                var tagName = match.Groups[1].Value;
+                var fullTag = match.Value;
+
+                var nativeFunc = _modules.GetDynamicNative(tagName);
+                if (nativeFunc != null)
+                {
+                    try
+                    {
+                        var parameters = nativeFunc.Method.GetParameters();
+                        if (parameters.Length == 0)
+                            return nativeFunc.DynamicInvoke()?.ToString() ?? "";
+
+                        return nativeFunc.DynamicInvoke(controller)?.ToString() ?? "";
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        return string.Empty;
+                    }
+                }
+
+                return loc?.TryGet(tagName) ?? fullTag;
+            });
+
+            message = ReplaceTags(message, globalReplacements).Replace("{PLAYERNAME}", gameClient.Name);
+
             switch (destination)
             {
                 case Destination.Chat:
                     message = ReplaceColorTags(message);
-
                     var parts = message.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
                     foreach (var part in parts)
                     {
                         var finalPart = (part.StartsWith(" ") || part.Length == 0) ? part : $" {part}";
-                        controller.Print(HudPrintChannel.Chat, $" {finalPart}");
+                        controller.Print(HudPrintChannel.Chat, finalPart);
                     }
 
                     break;
