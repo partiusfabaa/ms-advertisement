@@ -49,6 +49,20 @@ Use the key format {KEY_NAME} in your Advertisement.json.
 ### Example:
 If you have "my_message" in your lang file, put {my_message} in the config.
 
+# Custom Placeholders (API)
+This plugin supports **ModSharp Dynamic Natives**. Other plugins can register custom tags to be used in advertisements.
+
+**For Developers:**
+Register a function returning an `object` via `RegisterDynamicNative`.
+
+*   Supported signatures: `Func<IPlayerController, object>` or `Func<object>`.
+
+**Example:**
+
+Code: `RegisterDynamicNative(this, "MyPlugin::Credits", (Func<IPlayerController, object>)GetPlayerCredits);`
+
+Config: `Your credits: {MyPlugin::Credits}`
+
 # CHAT COLORS: 
 {White}, {DarkRed}, {Pink}, {Green}, {LightGreen}, {Lime}, {Red}, {Grey}, {Yellow}, {Gold}, {Silver}, {Blue}, {DarkBlue}, {Purple}, {LightRed}, {Muted}, {Head}
 
